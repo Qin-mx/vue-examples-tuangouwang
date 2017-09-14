@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>组件</title>
+</head>
+<body>
+<div id="app">
+	<input type="text"v-model='inp'>
+	<!-- 第一步：先在html中子自定义一个元素 -->
+	<my-abc msg="world" v-bind:cinp="inp"></my-abc>
+</div>
+<script src="https://cdn.bootcss.com/vue/1.0.28/vue.js"></script>
+	<script>
+	// 第二布建立Vue.extend
+	var MyAbc = Vue.extend({
+		// 将组件中的属性值引入组件内部就要通过props属性
+		props:['msg','cinp'],
+		//定义模版字符串
+		template:'<h1>hello {{msg}}</h1><h2>{{cinp}}</h2><button v-on:click="toUpper">btn</button>',
+		// 事件回掉函数要在methods属性中定义
+		methods: {
+			toUpper:function(){
+				console.log(2)
+				//想在子组件中向父组件返回信息
+				this.$dispatch('abc',123)
+				// console.log(this)
+			}
+		}
+	})
+	// 第三步：注册组件
+	Vue.component('my-abc',MyAbc);
+
+	//我们需要将父组件 （vue实例化对象）x向子组件传递数据，那么我们就要将inp传给子组件
+
+	// 创建vue实例化对象
+	var app = new Vue({
+		el:'#app',
+		data: {
+			inp:''
+		},
+		// 接收子组件传递的信息
+		events: {
+			'abc':function(){
+				// 在组件中获取的信息
+				console.log(333)
+				console.log(this)
+				console.log(arguments)
+			}
+		}
+	})
+	</script>
+</body>
+</html>

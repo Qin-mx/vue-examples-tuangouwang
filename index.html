@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+	<title>团购网</title>
+	<link rel="stylesheet" href="css/app.css">
+	<link href="http://www.thinkphp.cn/Public/favicon.ico" rel="shortcut icon">
+</head>
+<body>
+<div id="app">
+	<div class="header">
+		<div class="nav">
+			<a href="#"  class="fl back">
+				<span class="arrow">
+					<span class="arrow green"></span>
+				</span>
+			</a>
+			<a href="#" class="fr login">登录</a>
+			<h1>团购网</h1>
+		</div>
+		<div class="search" v-show="showSerch">
+			<input type="search" v-model="search" placeholder="请输入感兴趣的内容">
+		</div>
+	</div>
+	<component :is="view" v-bind:dsearch="search"></component>
+</div>
+
+<!-- 调用模版  通过模版工具-->
+<script type="text/template" id='tpl_home'>
+<!-- type页面 -->
+	<section class="list-wrapper">
+		<ul class="icon-list clear">
+			<li v-for="item in types" class="fl">
+				<a href="#/list/type/{{item.id}}">
+					<img :src="'Img/icon/' + item.url" alt="">
+					<span>{{item.title}}</span>
+				</a>
+			</li>
+		</ul>
+	</section>
+	<!-- 广告页面 -->
+	<section class="home-ad">
+		<ul class="ad-list clear">
+			<li v-for="item in ad" class="fl">
+				<a href="#/product/{{item.id}}">
+					<span class="info">
+						<strong>{{item.title}}</strong><small>{{item.description}}</small>
+					</span>
+					<span class="imgbox">
+						<img src="Img/item/01.png" alt="" class="opcImg">
+						<img :src="'Img/item/' + item.url" alt="">
+					</span>
+				</a>
+			</li>
+		</ul>
+	</section>
+	<!-- 商品列表页面 -->
+	<section class="list-con">
+		<div class="title">猜你喜欢</div>
+		<ul class="list">
+			<li v-for="item in list">
+				<a href="#/product/{{item.id}}">
+					<div class="fl imgbox">
+						<img :src="'Img/list/' + item.img" alt="">
+					</div>
+					<div class="fr text">
+						<h2>{{item.title}}</h2>
+						<p>
+							<span class="price">{{item.price | price}}</span>
+							<span class="origin-price">{{item.orignPrice | orignPrice}}</span>
+							<span class="sales fr">{{item.sales | sales}}</span>
+						</p>
+					</div>
+				</a>
+			</li>
+		</ul>
+	</section>
+</script>
+<!-- 调用模版  通过模版工具-->
+<script type="text/template" id='tpl_list'>
+	<!-- 商品列表页面 -->
+	<section class="list-con">
+		<!-- type按钮 -->
+		<ul class="list-type clear">
+			<li v-for="item in types" class="fl" @click="sortBy(item.key)">
+				<span class="arrow">{{item.value}}</span>
+			</li>
+		</ul>
+		<ul class="list">
+			<li v-for="item in list | filterBy dsearch">
+				<a href="#/product/{{item.id}}">
+					<div class="fl imgbox">
+						<img :src="'Img/list/' + item.img" alt="">
+					</div>
+					<div class="fr text">
+						<h2>{{item.title}}</h2>
+						<p>
+							<span class="price">{{item.price | price}}</span>
+							<span class="origin-price">{{item.orignPrice | orignPrice}}</span>
+							<span class="sales fr">{{item.sales | sales}}</span>
+						</p>
+					</div>
+				</a>
+			</li>
+		</ul>
+		<!-- 提示还有多少条 -->
+		<div class="load-more" v-if="other.length">
+			<span @click="loadMore">查看其他{{other.length}}条团购
+			</span>
+		</div>
+	</section>
+</script>
+<!-- 调用模版  通过模版工具-->
+<script type="text/template" id="tpl_product">
+	<section class="product">
+		<div class="title">
+			<img :src="'Img/' + data.src" alt="">
+			<h1>{{data.title}}</h1>
+			<p>{{data.description}}</p>
+		</div>
+		<!-- 价格 -->
+		<div class="price">
+			<span class="green"><span class="big">{{data.price}}</span>元</span>
+			<span>{{data.orignPrice | orignPrice}}</span>
+			<span class="btn">立即购买</span>
+		</div>
+		<!-- group -->
+		<ul class="group clear">
+			<li class="info">支持随时退款</li>
+			<li class="info">支持过期自动退</li>
+			<li>{{data.sales | sales}}</li>
+		</ul>
+		<!-- 店家信息 -->
+		<div class="part store">
+			<h3 class="sub-title">店家信息</h3>
+			<div class="container">
+				<p>{{data.storeName}}</p>
+				<p>{{data.storeAdress}}</p>
+			</div>
+			<div class="footer">查看{{data.storeNum}}家试用分店</div>
+		</div>
+		<!-- 购买须知 -->
+		<div class="part buy">
+			<h3 class="sub-title">购买须知</h3>
+			<div class="container">
+				<ul class="list">
+					<li>
+						<h4>有效期</h4>
+						<div>
+							<p>{{data.validateTime}}</p>
+						</div>
+					</li>
+					<li>
+						<h4>使用时间</h4>
+						<div>
+							<p>{{data.useTime}}</p>
+						</div>
+					</li>
+					<li>
+						<h4>使用规则</h4>
+						<div>
+							<ul>
+								<li v-for="item in data.rules">
+								{{item}}</li>
+							</ul>
+						</div>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</section>
+</script>
+	<script src="https://cdn.bootcss.com/vue/1.0.28/vue.js"></script>
+
+	<script src="js/app.js"></script>
+</body>
+</html>
